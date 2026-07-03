@@ -5,6 +5,8 @@ import torch
 import torchaudio
 from torch.utils.data import DataLoader, Dataset
 from collections import defaultdict
+from plot_mel_specs import PlotMelSpec as pltms
+
 
 class KWS12Dataset(Dataset):
     """
@@ -153,8 +155,11 @@ if __name__ == "__main__":
         num_workers=4,
     )
 
-    for mel, labels in loader:
-        assert mel.shape == (64, 1, 40, 100), f"Unexpected mel shape: {mel.shape}"
+    for mels, labels in loader:
+        assert mels.shape == (64, 1, 40, 100), f"Unexpected mel shape: {mels.shape}"
         assert labels.shape == (64,), f"Unexpected labels shape: {labels.shape}"
-        print(f"Batch processed. Mel: {mel.shape}, Labels: {labels.shape}")
+        print(f"Batch processed. Mel: {mels.shape}, Labels: {labels.shape}")
+        
+        pltms(mels[0], labels[0])
+
         break

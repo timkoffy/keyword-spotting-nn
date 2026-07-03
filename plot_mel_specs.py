@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
-import torch
 
-
+# todo: normalise freqs and time on plot 
+# todo: allow to plot entire batch of melspecs for comparing
 class PlotMelSpec():
     def __init__(self,
                  mel_spec=None, 
@@ -9,13 +9,21 @@ class PlotMelSpec():
         """
         Plotting mel spectrogram (tensor [H, W] or [1, H, W]) with labeling and coloring
         """
-    
-        mel_spec=torch.rand(1, 40, 100).squeeze().numpy()
-        plt.imshow(mel_spec, interpolation="bilinear")
+
+        if mel_spec is None:
+            print("Mel spec tensor has not given")
+            return
+
+        mel_spec = mel_spec.squeeze()
+        plt.imshow(mel_spec, cmap="plasma", interpolation="bilinear")
 
         if label: 
             plt.title(f"Mel-spectrogram of '{label}'")
 
+        plt.colorbar()
+
+        plt.xlabel("time")
+        plt.ylabel("freq")
 
         plt.show()
 
