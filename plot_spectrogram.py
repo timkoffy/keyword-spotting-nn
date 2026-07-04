@@ -21,6 +21,7 @@ def plot_mel_spec(mel_spec, label=None) :
 
     plt.show()
 
+
 def plot_mel_specs_multiply(mel_specs, labels=None):
     """
     Plotting mel spectrograms + waveforms with labeling for comparing (input: tensor [B, H, W] or [B, 1, H, W])
@@ -35,7 +36,10 @@ def plot_mel_specs_multiply(mel_specs, labels=None):
     n_cols = n_batches // 4
     n_rows = n_batches // n_cols
 
-    _, axs = plt.subplots(n_rows, n_cols)
+    f, axs = plt.subplots(n_rows, n_cols)
+
+    f.set_figheight(3 * n_rows)
+    f.set_figwidth(4 * n_rows)
 
     for i in range(n_rows):
         for j in range(n_cols):
