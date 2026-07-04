@@ -5,7 +5,7 @@ import torch
 import torchaudio
 from torch.utils.data import DataLoader, Dataset
 from collections import defaultdict
-from plot_mel_specs import PlotMelSpec as pltms
+import plot_spectrogram as plts
 
 
 class KWS12Dataset(Dataset):
@@ -64,8 +64,8 @@ class KWS12Dataset(Dataset):
 
         class_sizes = {label: len(paths) for label, paths in keyword_samples.items()}
         base_size = max(class_sizes.values())
-        unknown_size = int(base_size * unknown_ratio)
-        self.silence_size = int(base_size * silence_ratio)
+        unknown_size = int(len(walker) * unknown_ratio)
+        self.silence_size = int(len(walker) * silence_ratio)
 
         sampled_unknown = random.sample(unknown_samples, unknown_size)
 
@@ -133,7 +133,6 @@ class KWS12Dataset(Dataset):
 
 
         mel_spec = self.mel_transform(waveform)
-        mel_spec = torch.log(mel_spec + 1e-8)
 
         if mel_spec.shape[2] > 100:
             mel_spec = mel_spec[:, :, :100]
@@ -142,7 +141,11 @@ class KWS12Dataset(Dataset):
 
         
         return mel_spec, label
-
+    
+    def idx_to_label(self, idx):
+        if idx >= len(self.LABELS):
+            return "unknown" if idx - len(self.LABELS) == 0 else "silence"
+        return self.LABELS[idx]
 
 
 if __name__ == "__main__":
@@ -150,16 +153,15 @@ if __name__ == "__main__":
 
     loader = DataLoader(
         dataset,
-        batch_size=64, 
+        batch_size=32, 
         shuffle=True,
         num_workers=4,
     )
 
     for mels, labels in loader:
-        assert mels.shape == (64, 1, 40, 100), f"Unexpected mel shape: {mels.shape}"
-        assert labels.shape == (64,), f"Unexpected labels shape: {labels.shape}"
+        assert mels.shape == (32, 1, 40, 100), f"Unexpected mel shape: {mels.shape}"
+        assert labels.shape == (32,), f"Unexpected labels shape: {labels.shape}"
         print(f"Batch processed. Mel: {mels.shape}, Labels: {labels.shape}")
-        
-        pltms(mels[0], labels[0])
 
+        plts.plot_mel_specs_multiply(mels, [dataset.idx_to_label(label) for label in labels])
         break
