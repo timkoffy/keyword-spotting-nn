@@ -1,14 +1,21 @@
 import matplotlib.pyplot as plt
 import torchaudio
 import torch
+import numpy as np
+import os
+import sys
 
-# todo: normalise freqs and time on plot 
-def plot_mel_spec(mel_spec, label=None) :
+
+def plot_mel_spec(mel_spec, label=None):
     """
-    Plotting mel spectrogram + waveform with labeling (input: tensor [H, W] or [1, H, W])
+    Plot a single Mel-spectrogram with an optional label.
+
+    Args:
+        mel_spec (torch.Tensor): The Mel-spectrogram tensor of shape [H, W] or [1, H, W].
+        label (str, optional): A string label to display in the plot title.
     """
     if mel_spec is None:
-        print("Mel spec has not given")
+        print("Mel spec has not been provided")
         return
 
     if mel_spec.dim() == 3:
@@ -24,7 +31,11 @@ def plot_mel_spec(mel_spec, label=None) :
 
 def plot_mel_specs_multiply(mel_specs, labels=None):
     """
-    Plotting mel spectrograms + waveforms with labeling for comparing (input: tensor [B, H, W] or [B, 1, H, W])
+    Plot a grid of Mel-spectrograms for batch visualization and comparison.
+
+    Args:
+        mel_specs (torch.Tensor): A batch of Mel-spectrograms of shape [B, H, W] or [B, 1, H, W].
+        labels (list[str], optional): A list of string labels corresponding to each spectrogram in the batch.
     """
     n_batches = mel_specs.shape[0]
     
@@ -33,13 +44,21 @@ def plot_mel_specs_multiply(mel_specs, labels=None):
     
     power_to_db = torchaudio.transforms.AmplitudeToDB("power", 80.0)
 
-    n_cols = n_batches // 4
-    n_rows = n_batches // n_cols
+    # Calculate grid dimensions (aiming for ~4 columns)
+    n_cols = max(1, n_batches // 4)
+    n_rows = (n_batches + n_cols - 1) // n_cols 
 
     f, axs = plt.subplots(n_rows, n_cols)
+    # Ensure axs is always iterable even if n_rows or n_cols is 1
+    if n_rows == 1 and n_cols == 1:
+        axs = np.array([[axs]])
+    elif n_rows == 1:
+        axs = axs[np.newaxis, :]
+    elif n_cols == 1:
+        axs = axs[:, np.newaxis]
 
     f.set_figheight(3 * n_rows)
-    f.set_figwidth(4 * n_rows)
+    f.set_figwidth(4 * n_cols)
 
     for i in range(n_rows):
         for j in range(n_cols):
@@ -56,12 +75,17 @@ def plot_mel_specs_multiply(mel_specs, labels=None):
             if labels is not None:
                 axs[i][j].set_title(labels[idx])
 
-    plt.tight_layout(pad=0.5)
+    plt.tight_layout()
     plt.show()
 
 
 if __name__ == "__main__":
-    waveform, sr = torchaudio.load('./test_data/test_C_octaves.wav')
+    file_path = "./data/mel_spec_test_data/test_C_octaves.wav"
+    if not (os.path.exists(file_path) and file_path.lower().endswith('.wav')):
+        print(f"Error: File not found or invalid format at '{file_path}'")
+        sys.exit(1)
+
+    waveform, sr = torchaudio.load(file_path)
     
     n_fft = 1024
     win_length = None

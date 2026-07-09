@@ -10,8 +10,33 @@ import plot_spectrogram as plts
 
 class KWS12Dataset(Dataset):
     """
+    PyTorch Dataset for 12-class Keyword Spotting.
+    
+    The dataset consists of 10 target keywords, an 'unknown' class (other words), 
+    and a 'silence' class (background noise).
 
-    """
+    Target keywords: yes, no, up, down, left, right, on, off, stop, go.
+
+    The sizes of the 'unknown' and 'silence' classes are calculated by multiplying 
+    the total number of keyword samples by `unknown_ratio` and `silence_ratio`, 
+    respectively.
+
+    Args:
+        root (str): Root directory for the dataset.
+        subset (str): Subset to load ('training', 'validation', or 'testing').
+        augment (bool): Whether to apply data augmentation (time shift, volume).
+        unknown_ratio (float): Fraction of total samples to allocate to the 'unknown' class.
+        silence_ratio (float): Fraction of total samples to allocate to the 'silence' class.
+        seed (int): Random seed for reproducibility.
+
+    Returns:
+        tuple: (mel_spectrogram, label_idx) where:
+            - mel_spectrogram is a torch.Tensor of shape (1, 40, 100).
+            - label_idx is an int (0-9 for keywords, 10 for unknown, 11 for silence).
+            
+    Note:
+        Use `idx_to_label(idx)` to convert a numeric label back to its string representation.
+    """ 
 
     LABELS = ["yes", "no", "up", "down", "left", "right", "on", "off", "stop", "go"]
     LABEL_TO_IDX = {label: idx for idx, label in enumerate(LABELS)}
@@ -64,8 +89,10 @@ class KWS12Dataset(Dataset):
 
         class_sizes = {label: len(paths) for label, paths in keyword_samples.items()}
         base_size = max(class_sizes.values())
-        unknown_size = int(len(walker) * unknown_ratio)
-        self.silence_size = int(len(walker) * silence_ratio)
+
+        total_keyword_samples = sum(class_sizes.values())
+        unknown_size = int(total_keyword_samples * unknown_ratio)
+        self.silence_size = int(total_keyword_samples * silence_ratio)
 
         sampled_unknown = random.sample(unknown_samples, unknown_size)
 
