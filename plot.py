@@ -4,8 +4,7 @@ import torch
 import numpy as np
 import os
 import sys
-import pickle
-
+from log import TrainingStats
 
 def plot_mel_spec(mel_spec, label=None):
     """
@@ -81,8 +80,9 @@ def plot_mel_specs_multiply(mel_specs, labels=None):
 
 
 def plot_stats(path="training_stats.pkl"):
-    with open(path, "rb") as f:
-        history = pickle.load(f)
+    stats = TrainingStats.load(path)
+
+    history = stats.history
 
     plt.plot(history["epochs"], history["train_loss"], label="Train Loss")
     plt.plot(history["epochs"], history["val_loss"], label="Validate Loss")

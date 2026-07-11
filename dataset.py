@@ -155,8 +155,30 @@ class KWS12Dataset(Dataset):
             elif shift < 0: 
                 waveform = torch.nn.functional.pad(waveform, (0, -shift))
 
+            if waveform.shape[1] > 16000:
+                waveform = waveform[:, :16000]
+            elif waveform.shape[1] < 16000:
+                waveform = torch.nn.functional.pad(waveform, (0, 16000 - waveform.shape[1]))
+
+
             vol = random.uniform(0.8, 1.2)
             waveform = waveform * vol
+
+            if self.background_noise_files and random.random() < 0.5:
+                noise_path = random.choice(self.background_noise_files)
+                noise_waveform, _ = torchaudio.load(noise_path)
+                
+                if noise_waveform.shape[0] > 1:
+                    noise_waveform = noise_waveform.mean(dim=0, keepdim=True)
+                
+                if noise_waveform.shape[1] < 16000:
+                    noise_waveform = noise_waveform.repeat(1, (16000 // noise_waveform.shape[1]) + 1)
+                
+                start = random.randint(0, noise_waveform.shape[1] - 16000)
+                noise_chunk = noise_waveform[:, start:start + 16000]
+                
+                noise_scale = random.uniform(0.05, 0.25)
+                waveform = waveform + (noise_scale * noise_chunk)
 
 
         mel_spec = self.mel_transform(waveform)

@@ -29,7 +29,7 @@ class KeywordSpottingModel(nn.Module):
                 nn.Flatten(), # output: [B, 128]
                 nn.Linear(128, 64),
                 nn.ReLU(inplace=True),
-                nn.Dropout(p=0.7),
+                nn.Dropout(p=0.4),
                 nn.Linear(64, num_classes) # output: [B, 12]
                 )
 

@@ -20,7 +20,7 @@ class TrainingStats:
         
     def save(self, path="training_stats.pkl"):
         with open(path, "wb") as f: 
-            pickle.dump(self.history, f)
+            pickle.dump(self, f)
 
     @staticmethod
     def load(path="training_stats.pkl"):
