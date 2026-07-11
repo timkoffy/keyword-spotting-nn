@@ -4,6 +4,7 @@ import torch
 import numpy as np
 import os
 import sys
+import pickle
 
 
 def plot_mel_spec(mel_spec, label=None):
@@ -76,6 +77,18 @@ def plot_mel_specs_multiply(mel_specs, labels=None):
                 axs[i][j].set_title(labels[idx])
 
     plt.tight_layout()
+    plt.show()
+
+
+def plot_stats(path="training_stats.pkl"):
+    with open(path, "rb") as f:
+        history = pickle.load(f)
+
+    plt.plot(history["epochs"], history["train_loss"], label="Train Loss")
+    plt.plot(history["epochs"], history["val_loss"], label="Validate Loss")
+    plt.xlabel("Epoch")
+    plt.ylabel("Loss")
+    plt.legend()
     plt.show()
 
 

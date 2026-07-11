@@ -3,6 +3,9 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 from dataset import KWS12Dataset
 from model import KeywordSpottingModel
+from log import TrainingStats
+from plot import plot_stats
+
 
 def training_loop(epochs=10, batch_size=64, lr=0.001, device=torch.device("cpu")):
     train_dataset = KWS12Dataset(subset="training", augment=True)
@@ -14,8 +17,9 @@ def training_loop(epochs=10, batch_size=64, lr=0.001, device=torch.device("cpu")
 
     model = KeywordSpottingModel(num_classes=12).to(device)
     loss_fn = nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=0.0001)
 
+    stats = TrainingStats()
     
     for epoch in range(epochs):
         model.train()
@@ -58,15 +62,20 @@ def training_loop(epochs=10, batch_size=64, lr=0.001, device=torch.device("cpu")
         train_acc = 100.0 * train_correct / train_total
         val_acc = 100.0 * val_correct / val_total
 
+        stats.log(epoch+1, train_loss/train_total, train_acc, val_loss/val_total, val_acc)
+
         print(f"Epoch [{epoch+1}/{epochs}] | "
               f"Train Loss: {train_loss/train_total:.4f} Acc: {train_acc:.2f}% | "
               f"Val Loss: {val_loss/val_total:.4f} Acc: {val_acc:.2f}%")
 
+    
     torch.save(model.state_dict(), "kws_model.pth")
+    stats.save("training_stats.pkl")
+    plot_stats("training_stats.pkl")
     print("Model saved to kws_model.pth")
 
 
 if __name__ == "__main__":
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
-    training_loop(epochs=15, batch_size=64, lr=0.003, device=device)
+    training_loop(epochs=15, batch_size=64, lr=0.001, device=device)

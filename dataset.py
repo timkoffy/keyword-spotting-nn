@@ -5,7 +5,7 @@ import torch
 import torchaudio
 from torch.utils.data import DataLoader, Dataset
 from collections import defaultdict
-import plot_spectrogram as plts
+import plot as plt
 
 
 class KWS12Dataset(Dataset):
@@ -119,7 +119,7 @@ class KWS12Dataset(Dataset):
         print(f"Unknown: {len(unknown_samples)} -> sampled {unknown_size}")
         print(f"Silence (virtual): {self.silence_size}")
         print(f"Total dataset length: {len(self)}")
-        print("=========================================")
+        print("===")
 
     def __len__(self):
         return len(self.samples) + self.silence_size
@@ -190,5 +190,5 @@ if __name__ == "__main__":
         assert labels.shape == (32,), f"Unexpected labels shape: {labels.shape}"
         print(f"Batch processed. Mel: {mels.shape}, Labels: {labels.shape}")
 
-        plts.plot_mel_specs_multiply(mels, [dataset.idx_to_label(label) for label in labels])
+        plt.plot_mel_specs_multiply(mels, [dataset.idx_to_label(label) for label in labels])
         break
