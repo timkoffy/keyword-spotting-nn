@@ -1,6 +1,6 @@
 import torch.nn as nn
 
-class KeywordSpottingModelV0(nn.Module):
+class KeywordSpottingModel(nn.Module):
     """
     2D CNN for Keyword Spotting.
     Treats the Mel-spectrogram [1, 40, 100] as a single-channel image.
@@ -42,7 +42,7 @@ class KeywordSpottingModelV0(nn.Module):
 
 if __name__ == "__main__":
     import torch
-    model = KeywordSpottingModelV0()
+    model = KeywordSpottingModel()
     dummy_input = torch.randn(4, 1, 40, 100)
     output = model(dummy_input)
     print(dummy_input.shape)
