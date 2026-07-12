@@ -3,24 +3,10 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from dataset import KWS12Dataset
-from model import KeywordSpottingModel
+from model import KeywordSpottingModelV1 as KWS12Model
 from log import TrainingStats
 from plot import plot_stats
 import os
-import pickle
-
-
-def load_model(filepath="kws_model.pth", device=torch.device("cpu")):
-    model = KeywordSpottingModel(num_classes=12)
-   
-    if os.path.exists(filepath):
-        state_dict = torch.load(filepath, map_location=device)
-        model.load_state_dict(state_dict)
-    
-    model.to(device)
-    model.eval()
-    
-    return model
 
 
 def training_loop(epochs=10, batch_size=64, lr=0.001, device=torch.device("cpu")):
@@ -31,7 +17,7 @@ def training_loop(epochs=10, batch_size=64, lr=0.001, device=torch.device("cpu")
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=4)
 
     
-    model = KeywordSpottingModel(num_classes=12).to(device)
+    model = KWS12Model(num_classes=12).to(device)
     loss_fn = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=0.0001)
 
@@ -140,11 +126,10 @@ def training_loop(epochs=10, batch_size=64, lr=0.001, device=torch.device("cpu")
               f"Val Loss: {avg_val_loss:.4f} Acc: {val_acc:.2f}% | "
               f"LR: {current_lr:.6f}{best_indicator}")
   
-    plot_stats("training_stats.pkl")
-    print("Model saved to kws_model.pth")
+    # plot_stats("training_stats.pkl")
 
 
 if __name__ == "__main__":
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
-    training_loop(epochs=20, batch_size=64, lr=0.001, device=device)
+    training_loop(epochs=30, batch_size=64, lr=0.001, device=device)
