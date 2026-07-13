@@ -196,6 +196,8 @@ class KWS12Dataset(Dataset):
             return "unknown" if idx - len(self.LABELS) == 0 else "silence"
         return self.LABELS[idx]
 
+    def get_labels(self):
+        return self.LABELS + ["unknown", "silence"]
 
 if __name__ == "__main__":
     dataset = KWS12Dataset()

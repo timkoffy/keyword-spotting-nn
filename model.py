@@ -78,7 +78,7 @@ class KeywordSpottingModelV1(nn.Module):
 
 if __name__ == "__main__":
     import torch
-    model = KeywordSpottingModel()
+    model = KeywordSpottingModelV1()
     dummy_input = torch.randn(4, 1, 40, 100)
     output = model(dummy_input)
     print(dummy_input.shape)
