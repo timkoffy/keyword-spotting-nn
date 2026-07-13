@@ -44,12 +44,11 @@ def plot_mel_specs_multiply(mel_specs, labels=None):
     
     power_to_db = torchaudio.transforms.AmplitudeToDB("power", 80.0)
 
-    # Calculate grid dimensions (aiming for ~4 columns)
     n_cols = max(1, n_batches // 4)
     n_rows = (n_batches + n_cols - 1) // n_cols 
 
     f, axs = plt.subplots(n_rows, n_cols)
-    # Ensure axs is always iterable even if n_rows or n_cols is 1
+
     if n_rows == 1 and n_cols == 1:
         axs = np.array([[axs]])
     elif n_rows == 1:
@@ -79,7 +78,7 @@ def plot_mel_specs_multiply(mel_specs, labels=None):
     plt.show()
 
 
-def plot_stats(path="training_stats.pkl"):
+def plot_loss_stats(path="training_stats.pkl"):
     stats = TrainingStats.load(path)
 
     history = stats.history
@@ -88,6 +87,20 @@ def plot_stats(path="training_stats.pkl"):
     plt.plot(history["epochs"], history["val_loss"], label="Validate Loss")
     plt.xlabel("Epoch")
     plt.ylabel("Loss")
+    plt.legend()
+    plt.show()
+
+
+def plot_acc_stats(path="training_stats.pkl"):
+    stats = TrainingStats.load(path)
+
+    history = stats.history
+
+    plt.plot(history["epochs"], history["train_acc"], label="Train Accuracy")
+    plt.plot(history["epochs"], history["val_acc"], label="Validate Accuracy")
+    plt.xlabel("Epoch")
+    plt.ylabel("Accuracy, %")
+    plt.ylim(0, 100)
     plt.legend()
     plt.show()
 
@@ -119,3 +132,5 @@ if __name__ == "__main__":
     mel_spec = mel_spec_fn(waveform)
 
     plot_mel_spec(mel_spec, label="test_C_octaves")
+
+    plot_acc_stats("training_stats.pkl")
