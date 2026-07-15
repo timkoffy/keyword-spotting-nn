@@ -7,6 +7,8 @@ cycler==0.12.1
 filelock==3.29.4
 fonttools==4.63.0
 fsspec==2026.6.0
+gevent==26.5.0
+greenlet==3.5.3
 Jinja2==3.1.6
 kiwisolver==1.5.0
 MarkupSafe==3.0.3
@@ -44,3 +46,6 @@ torchaudio==2.11.0
 torchcodec==0.14.0
 triton==3.7.1
 typing_extensions==4.15.0
+websockets==16.1
+zope.event==6.2
+zope.interface==8.5
