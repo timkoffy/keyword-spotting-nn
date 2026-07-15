@@ -5,7 +5,6 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 from dataset import KWS12Dataset
 from model import KeywordSpottingModelV1 as KWS12Model
 from log import TrainingStats
-from plot import plot_stats
 import os
 
 
@@ -30,12 +29,12 @@ def training_loop(epochs=10, batch_size=64, lr=0.001, device=torch.device("cpu")
     )
 
     stats = TrainingStats()
-    stats_path = "training_stats.pkl"
+    stats_path = "models/training_stats.pkl"
     if os.path.exists(stats_path):
         stats = TrainingStats.load(stats_path)
 
-    checkpoint_path = "checkpoint.pth"
-    best_model_path = "kws_model.pth"
+    checkpoint_path = "models/checkpoint.pth"
+    best_model_path = "models/kws_model.pth"
     
     start_epoch = 0
     best_val_loss = float('inf')
