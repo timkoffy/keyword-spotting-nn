@@ -5,7 +5,7 @@ import torch
 import torchaudio
 from torch.utils.data import DataLoader, Dataset
 from collections import defaultdict
-import plot as plt
+import utils.plot as plt
 
 
 class KWS12Dataset(Dataset):

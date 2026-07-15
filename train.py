@@ -4,7 +4,7 @@ from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from dataset import KWS12Dataset
 from model import KeywordSpottingModelV1 as KWS12Model
-from log import TrainingStats
+from utils.log import TrainingStats
 import os
 
 

@@ -4,7 +4,7 @@ import torch
 import numpy as np
 import os
 import sys
-from log import TrainingStats
+from utils.log import TrainingStats
 
 def plot_mel_spec(mel_spec, label=None):
     """
