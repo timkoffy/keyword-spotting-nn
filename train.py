@@ -129,6 +129,6 @@ def training_loop(epochs=10, batch_size=64, lr=0.001, device=torch.device("cpu")
 
 
 if __name__ == "__main__":
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    print(f"Using device: {device}")
-    training_loop(epochs=30, batch_size=64, lr=0.001, device=device)
+    from config import DEVICE
+    print(f"Using device: {DEVICE}")
+    training_loop(epochs=30, batch_size=64, lr=0.001, device=DEVICE)
