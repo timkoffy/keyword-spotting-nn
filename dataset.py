@@ -60,6 +60,8 @@ class KWS12Dataset(Dataset):
         random.seed(seed)
         torch.manual_seed(seed)
 
+        os.makedirs(root, exist_ok=True)
+
         self.base_dataset = torchaudio.datasets.SPEECHCOMMANDS(
             root=root,
             url="speech_commands_v0.02",
